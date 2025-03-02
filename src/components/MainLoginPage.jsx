@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 
 const CLIENT_ID = import.meta.env.VITE_SPOTIFY_CLIENT_ID;
 const CLIENT_SECRET = import.meta.env.VITE_SPOTIFY_CLIENT_SECRET;
-const REDIRECT_URI = "https://8862-83-24-216-248.ngrok-free.app/";
+const REDIRECT_URI = "https://spotify-statistic-six.vercel.app/";
 const AUTH_URL = "https://accounts.spotify.com/authorize";
 const SCOPES = "user-top-read";
 

@@ -7,6 +7,6 @@ export default defineConfig({
   plugins: [react(), tailwindcss()],
   server: {
     host: true, // Позволяет доступ извне
-    allowedHosts: ["8862-83-24-216-248.ngrok-free.app"], // Укажи свой ngrok-домен
+    allowedHosts: ["https://spotify-statistic-six.vercel.app/"], // Укажи свой ngrok-домен
   },
 })

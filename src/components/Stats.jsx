@@ -56,7 +56,7 @@ export const Stats = () => {
         let tempVisibleText = [];
 
         const stream = client.chatCompletionStream({
-            model: "meta-llama/Llama-3.2-3B-Instruct",
+            model: "mistralai/Mistral-7B-Instruct-v0.2",
             messages: [
                 { role: 'system', content: aiPrompt },
                 { role: "user", content: `Here are my top artists and tracks:\n${data.top_tracks}\n${data.top_artists}` },

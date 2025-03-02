@@ -166,7 +166,7 @@ export const ArtistTop = () => {
                                 <div className="glass-block">
                                     <a href={artist.external_urls.spotify}>
                                         <div className="noise-overlay"></div>
-                                        <div className='columns-2'>
+                                        <div className='flex flex-col sm:flex-row columns-2'>
                                             <div className="z-20 flex justify-left">
                                                 <img
                                                     src={imageUrl}

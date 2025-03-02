@@ -120,7 +120,7 @@ export const ArtistTop = () => {
                 <div className="w-full max-w-md mt-20">
                     {artists.map((artist, index) => {
                         const imageUrl = artist.images?.[0]?.url || "";
-                        const glowColors = ["gold", "silver", "#cd7f32"];
+                        const glowColors = ["yellow", "silver", "#cd7f32"];
 
                         return (
                             <motion.div

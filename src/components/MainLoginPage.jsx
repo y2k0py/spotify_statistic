@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 
 const CLIENT_ID = import.meta.env.VITE_SPOTIFY_CLIENT_ID;
 const CLIENT_SECRET = import.meta.env.VITE_SPOTIFY_CLIENT_SECRET;
-const REDIRECT_URI = "https://spotify-statistic-six.vercel.app/";
+const REDIRECT_URI = "http://192.168.0.112:5173/";
 const AUTH_URL = "https://accounts.spotify.com/authorize";
 const SCOPES = "user-top-read";
 
@@ -86,16 +86,18 @@ export const MainLoginPage = () => {
         <div className="flex flex-col items-center justify-center min-h-screen bg-black p-4">
             <div className="mt-4 flex flex-col gap-4 bg-black items-center justify-center p-4 text-center">
                 <h1 className="text-3xl font-bold text-center">
-                    <span className="text-transparent bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text animate-gradient">
+                    <span
+                        className="text-transparent bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text animate-gradient">
                         Welcome to your
                     </span>
 
                     <span className="inline-flex items-center gap-2 ml-2">
                         <span className="text-green-500 glow-green">Spotify</span>
-                        <img src={SpotifyLogo} className="h-8 glow-green mr-2" alt="Spotify Logo" />
+                        <img src={SpotifyLogo} className="h-8 glow-green mr-2" alt="Spotify Logo"/>
                     </span>
 
-                    <span className="text-transparent bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text animate-gradient">
+                    <span
+                        className="text-transparent bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text animate-gradient">
                         statistic!
                     </span>
                 </h1>

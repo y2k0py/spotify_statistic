@@ -1,204 +1,144 @@
-import { useState, useEffect } from "react";
-import { fetchWithAuth } from "../api.js";
+import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
-import { BsFillPeopleFill } from "react-icons/bs";
-
-const starGlowStyles = `
-@keyframes starPulse {
-  0%, 100% {
-    transform: scale(1);
-    opacity: 0.5;
-  }
-  50% {
-    transform: scale(1.1);
-    opacity: 1;
-  }
-}
-.star-glow-container {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  animation: starPulse 8s infinite alternate ease-in-out;
-  z-index: 0;
-}
-`;
-
-const generateStarPoints = (cx, cy) => {
-    const spikes = 5; // Фиксируем 5 лучей для простоты и стабильности
-    const results = [];
-    const step = Math.PI / spikes;
-
-    for (let i = 0; i < spikes * 2; i++) {
-        const radius = i % 2 === 0 ? 50 : 20; // Чёткие длинные (50) и короткие (20) лучи
-        const angle = i * step;
-        const x = cx + Math.cos(angle) * radius;
-        const y = cy + Math.sin(angle) * radius;
-        results.push(`${x},${y}`);
-    }
-
-    return results.join(" ");
-};
+import { fetchWithAuth } from "../api.js";
+import { useNavigate } from "react-router-dom";
+import star_wink from "../assets/star_wink.gif";
 
 export const ArtistTop = () => {
     const token = localStorage.getItem("access_token");
     const [artists, setArtists] = useState([]);
+    const navigate = useNavigate();
+    const containerRef = useRef(null);
+    const rafId = useRef(null);
+    const [headerBlur, setHeaderBlur] = useState(0); // состояние для блюра в хедере
 
-    const fetchArtists = async () => {
-        const response = await fetchWithAuth("/me/top/artists");
-        const data = await response.json();
-        setArtists(data.items);
+    useEffect(() => {
+        if (!token) {
+            navigate("/");
+            return;
+        }
+        const fetchArtists = async () => {
+            const response = await fetchWithAuth("/me/top/artists");
+            const data = await response.json();
+            setArtists(data.items);
+        };
+        fetchArtists();
+    }, [token, navigate]);
+
+    // Функция для обновления масштаба блоков артистов
+    const updateScales = () => {
+        if (!containerRef.current) return;
+        const containerRect = containerRef.current.getBoundingClientRect();
+        const containerCenterY = containerRect.top + containerRect.height / 2;
+        const blocks = containerRef.current.querySelectorAll(".artist-block");
+
+        blocks.forEach((block) => {
+            const blockRect = block.getBoundingClientRect();
+            const blockCenterY = blockRect.top + blockRect.height / 2;
+            const distance = Math.abs(containerCenterY - blockCenterY);
+            const maxScale = 1.2;
+            const minScale = 0.8;
+            const threshold = containerRect.height;
+            let scale = maxScale - (distance / threshold) * (maxScale - minScale);
+            scale = Math.min(Math.max(scale, minScale), maxScale);
+            block.style.transform = `scale(${scale})`;
+        });
+    };
+
+    // Обработчик прокрутки: обновляет и масштабы блоков, и блюр в хедере
+    const handleScroll = () => {
+        if (rafId.current) {
+            cancelAnimationFrame(rafId.current);
+        }
+        rafId.current = requestAnimationFrame(() => {
+            updateScales();
+            if (!containerRef.current) return;
+            const scrollTop = containerRef.current.scrollTop;
+            // Рассчитываем блюр: при прокрутке на 20px — 1px блюра, максимум 10px
+            const newBlur = Math.min(scrollTop / 20, 10);
+            setHeaderBlur(newBlur);
+        });
     };
 
     useEffect(() => {
-        fetchArtists();
-    }, []);
-
-    if (!token) {
-        return (
-            <div className="min-h-screen bg-black text-white flex items-center justify-center">
-                Пожалуйста, войдите в систему
-            </div>
-        );
-    }
+        updateScales();
+        const container = containerRef.current;
+        if (container) {
+            container.addEventListener("scroll", handleScroll, { passive: true });
+        }
+        return () => {
+            if (container) {
+                container.removeEventListener("scroll", handleScroll);
+            }
+            if (rafId.current) cancelAnimationFrame(rafId.current);
+        };
+    }, [artists]);
 
     return (
-        <>
-            <style>{`
-        ${starGlowStyles}
-        .glass-block {
-          background: rgba(255, 255, 255, 0.1);
-          backdrop-filter: blur(10px);
-          -webkit-backdrop-filter: blur(10px);
-          border: 1px solid rgba(255, 255, 255, 0.2);
-          border-radius: 12px;
-          position: relative;
-          overflow: hidden;
-          padding: 16px;
-          margin-bottom: 35px;
-          z-index: 10;
-        }
-        .noise-overlay {
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          pointer-events: none;
-          background-image: url('https://evtifeev.com/wp-content/uploads/2018/05/photon.jpg');
-          background-size: cover;
-          opacity: 0.1;
-          z-index: 15;
-        }
-        @keyframes gradient {
-          0% { background-position: 0% 0%; }
-          50% { background-position: 100% 100%; }
-          100% { background-position: 0% 0%; }
-        }
-        .animate-gradient {
-          background-size: 200% 200%;
-          animation: gradient 6s infinite ease-in-out;
-        }
-      `}</style>
+        <div className="bg-black h-screen w-screen relative overflow-hidden">
+            <motion.header
+                initial={{ opacity: 0, filter: "blur(10px)" }}
+                animate={{ opacity: 1, filter: "blur(0px)" }}
+                transition={{ duration: 1, ease: "easeOut", delay: 0.5 }}
+                className="fixed top-0 left-0 right-0 flex items-center px-4"
+                style={{
+                    backgroundColor: "rgba(0, 0, 0, 0.2)",
+                    backdropFilter: `blur(${headerBlur}px)`,
+                    transition: "backdrop-filter 0.3s ease, background-color 0.3s ease",
+                    height: "60px",
+                    zIndex: 1000,
+                }}
+            >
+                <button onClick={() => navigate(-1)} className="text-white mr-4">
+                    &#8592;
+                </button>
+                <h1 className="text-white text-3xl font-bold text-center">Artists TOP</h1>
+            </motion.header>
 
-            <div className="min-h-screen bg-black flex flex-col items-center p-4">
-                <motion.h1
-                    className='text-4xl bg-gradient-to-r from-green-300 via-green-500 to-green-800 bg-clip-text text-transparent animate-gradient font-bold text-center mt-5 absolute top-2 left-1/2 transform -translate-x-1/2'
-                    initial={{ opacity: 0, filter: "blur(5px)" }}
-                    animate={{ opacity: 1, filter: "blur(0px)" }}
-                    transition={{ duration: 1, delay: 0.3 }}
-                >
-                    <div className='flex items-center justify-center'>
-                        <BsFillPeopleFill className='text-green-500 h-9 mr-3' />
-                        Artists
-                    </div>
-                </motion.h1>
-                <div className="w-full max-w-md mt-20">
-                    {artists.map((artist, index) => {
-                        const imageUrl = artist.images?.[0]?.url || "";
-                        const glowColors = ["yellow", "silver", "#cd7f32"];
+            {/* Звезда на заднем фоне */}
+            <motion.div
+                className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-0"
+                initial={{ opacity: 0, filter: "blur(10px)" }}
+                animate={{ opacity: 1, filter: "blur(0px)" }}
+                transition={{ duration: 1, ease: "easeOut", delay: 0.5 }}
+            >
+                <img src={star_wink} alt="My GIF" width="300" height="200" />
+            </motion.div>
 
-                        return (
-                            <motion.div
-                                key={artist.id}
-                                initial={{ opacity: 0, filter: "blur(10px)" }}
-                                animate={{ opacity: 1, filter: "blur(0px)" }}
-                                transition={{ duration: 1, delay: index * 0.2 }}
-                                className="relative"
-                            >
-                                {index < 3 && (
-                                    <div className="star-glow-container">
-                                        <div style={{ width: "100px", height: "100px" }}>
-                                            <svg
-                                                viewBox="0 0 100 100"
-                                                preserveAspectRatio="none"
-                                                style={{ width: "100%", height: "100%", filter: "blur(10px)" }}
-                                            >
-                                                <defs>
-                                                    <filter id={`glow-${index}`}>
-                                                        <feGaussianBlur stdDeviation="3" result="blurred" />
-                                                        <feMerge>
-                                                            <feMergeNode in="blurred" />
-                                                            <feMergeNode in="SourceGraphic" />
-                                                        </feMerge>
-                                                    </filter>
-                                                </defs>
-                                                <polygon
-                                                    filter={`url(#glow-${index})`}
-                                                    fill={glowColors[index]}
-                                                    opacity="1"
-                                                    points={generateStarPoints(50, 50)}
-                                                />
-                                            </svg>
-                                        </div>
-                                    </div>
-                                )}
+            {/* Прокручиваемый контейнер с карточками артистов */}
+            <div
+                ref={containerRef}
+                className="flex flex-col overflow-y-scroll h-full items-center py-10 snap-y transform-gpu z-10"
+            >
+                {artists.map((artist, index) => (
+                    <motion.div
+                        key={artist.id}
+                        className="artist-block snap-center flex flex-col rounded-xl p-5 m-6 transition-[transform] duration-300 ease-out transform-gpu"
+                        style={{
+                            backgroundColor: "rgba(0, 0, 0, 0.2)",
+                            backdropFilter: "blur(10px)",
+                        }}
+                        initial={{ opacity: 0, filter: "blur(10px)" }}
+                        animate={{ opacity: 1, filter: "blur(0px)" }}
+                        transition={{ duration: 0.9, ease: "easeOut", delay: index * 0.2 }}
+                    >
+                        <div className="flex items-center mb-4">
+                            {artist.images && artist.images[0] && (
+                                <img
+                                    src={artist.images[0].url}
+                                    alt={artist.name}
+                                    className="w-28 h-28 rounded-full mr-6 border-4 transform-gpu"
+                                />
+                            )}
+                            <div>
+                                <h2 className="text-white text-1xl font-bold">{artist.name}</h2>
+                                <h1 className='text-white text-3xl font-bold'>{index + 1}</h1>
+                            </div>
+                        </div>
 
-                                <div className="glass-block">
-                                    <a href={artist.external_urls.spotify}>
-                                        <div className="noise-overlay"></div>
-                                        <div className="columns-2">
-                                            <div className="z-20 flex justify-left">
-                                                <img
-                                                    src={imageUrl}
-                                                    alt={artist.name}
-                                                    className="w-35 h-35 rounded-full"
-                                                />
-                                            </div>
-                                            <div className="text-white font-bold">
-                                                <h1
-                                                    className={
-                                                        index === 0
-                                                            ? "text-5xl"
-                                                            : index === 1
-                                                                ? "text-4xl"
-                                                                : index === 2
-                                                                    ? "text-3xl"
-                                                                    : "text-2xl"
-                                                    }
-                                                >
-                                                    #{index + 1}
-                                                </h1>
-                                                <div className="rounded-2xl">
-                                                    <p className="text-2xl">{artist.name}</p>
-                                                    <span className="font-normal text-gray-300">
-                            <p>Popularity: {artist.popularity}%</p>
-                            <p>Followers: {artist.followers.total}</p>
-                          </span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </a>
-                                </div>
-                            </motion.div>
-                        );
-                    })}
-                </div>
+                    </motion.div>
+                ))}
             </div>
-        </>
+        </div>
     );
 };

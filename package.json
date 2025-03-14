@@ -12,6 +12,7 @@
   "dependencies": {
     "@huggingface/inference": "^3.3.6",
     "@tailwindcss/vite": "^4.0.6",
+    "@tsparticles/shape-star": "^3.8.1",
     "@yudiel/react-qr-scanner": "^2.1.0",
     "axios": "^1.7.9",
     "canvas-confetti": "^1.9.3",

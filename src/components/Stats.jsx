@@ -56,7 +56,7 @@ export const Stats = () => {
         let tempVisibleText = [];
 
         const stream = client.chatCompletionStream({
-            model: "mistralai/Mistral-7B-Instruct-v0.2",
+            model: "meta-llama/Meta-Llama-3-8B-Instruct",
             messages: [
                 { role: 'system', content: aiPrompt },
                 { role: "user", content: `Here are my top artists and tracks:\n${data.top_tracks}\n${data.top_artists}` },
@@ -70,6 +70,7 @@ export const Stats = () => {
             if (chunk.choices && chunk.choices.length > 0) {
                 const newContent = chunk.choices[0].delta.content;
                 out += newContent;
+                console.log(out)
                 setAIText(out);
                 tempVisibleText.push(newContent);
                 setVisibleText([...tempVisibleText]);
@@ -80,7 +81,7 @@ export const Stats = () => {
     };
 
     const TopButton = (top, isTracks = false, onClick) => {
-        if (!topArtists || topArtists.length === 0) return null;
+        if (!top || top.length === 0) return null;
 
         return (
             <button
@@ -88,7 +89,8 @@ export const Stats = () => {
                 onClick={onClick}
             >
                 <div
-                    className="absolute inset-0 flex flex-wrap gap-0 blur-xs opacity-40 rounded-2xl transition-transform duration-300 scale-100 group-hover:scale-110 group-active:scale-110">
+                    className="absolute inset-0 flex flex-wrap gap-0 blur-xs opacity-40 rounded-2xl transition-transform duration-300 scale-100 group-hover:scale-110 group-active:scale-95 pointer-events-none"
+                >
                     {top.slice(0, 3).map((artist, index) => (
                         <img
                             key={index}
@@ -101,7 +103,7 @@ export const Stats = () => {
                     ))}
                 </div>
 
-                <div className="absolute inset-0  bg-opacity-50"></div>
+                <div className="absolute inset-0 bg-opacity-50 pointer-events-none"></div>
 
                 <span className="relative z-10 text-2xl">
                 {isTracks ? 'Top Tracks' : 'Top Artists'}
@@ -135,7 +137,7 @@ export const Stats = () => {
 
             </motion.h1>
 
-            <div className="flex flex-col items-center justify-center text-center mt-15">
+            <div className="flex flex-col items-center justify-center text-center mt-15 ">
                 <motion.div
                     className="items-center"
                     initial={{opacity: 0, filter: "blur(10px)"}}
@@ -147,7 +149,7 @@ export const Stats = () => {
                 </motion.div>
 
                 <motion.div
-                    className='rounded-2xl p-2 leading-normal mt-5 mb-0'
+                    className='rounded-2xl p-2 mt-5 mb-0'
                     initial={{opacity: 0, filter: "blur(10px)"}}
                     animate={{opacity: 1, filter: "blur(0px)"}}
                     transition={{duration: 1, delay: 0.3}}
@@ -166,8 +168,7 @@ export const Stats = () => {
                         </div>
                     </motion.h1>
 
-                    <div className="absolute inset-0  bg-opacity-50"></div>
-                    <p className='text-lg text-gray-500 text-center pt-3 min-h-[200px]'>
+                    <p className='text-lg text-gray-500 text-center pt-3'>
                         {AIText.split(" ").map((word, index) => (
                             <motion.span
                                 key={index}

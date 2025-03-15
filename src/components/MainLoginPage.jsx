@@ -1,7 +1,7 @@
 import { useEffect, useCallback } from "react";
 import SpotifyLogo from "../assets/SpotifyLogo.png";
 import { useNavigate } from "react-router-dom";
-
+import seeya from "../assets/seeya.png"
 const CLIENT_ID = import.meta.env.VITE_SPOTIFY_CLIENT_ID;
 const CLIENT_SECRET = import.meta.env.VITE_SPOTIFY_CLIENT_SECRET;
 const REDIRECT_URI = import.meta.env.VITE_DOMAIN;
@@ -84,6 +84,8 @@ export const MainLoginPage = () => {
 
     return (
         <div className="flex flex-col items-center justify-center min-h-screen bg-black p-4">
+            <header className="fixed top-0 left-25 mt-3 right-0 flex items-center flex content-center px-4"><img src={seeya} alt="seeya" className='h-20'/></header>
+
             <div className="mt-4 flex flex-col gap-4 bg-black items-center justify-center p-4 text-center">
                 <h1 className="text-3xl font-bold text-center">
                     <span

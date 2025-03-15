@@ -1,3 +1,4 @@
+import {useNavigate} from "react-router-dom";
 
 
 const API_BASE_URL = "https://api.spotify.com/v1";
@@ -46,6 +47,10 @@ const getRefreshToken = async () => {
 
 export const fetchWithAuth = async (endpoint, options = {}) => {
     let token = localStorage.getItem("access_token");
+    if (!token) {
+        window.location.href = "/";
+        return;
+    }
 
     let response = await fetch(`${API_BASE_URL}${endpoint}`, {
         ...options,

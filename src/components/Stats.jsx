@@ -19,7 +19,7 @@ export const Stats = () => {
             const artists = await fetchWithAuth('/me/top/artists');
             const artists_data = await artists.json();
 
-            const tracks = await fetchWithAuth('/me/top/tracks');
+            const tracks = await fetchWithAuth('/me/top/tracks' );
             const tracks_data = await tracks.json();
 
             setTopArtists(artists_data.items);

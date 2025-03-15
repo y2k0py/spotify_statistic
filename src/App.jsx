@@ -4,6 +4,7 @@ import {SuccessfullyLogin} from "./components/SuccsessfullyLogin.jsx";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import {ArtistTop} from "./components/ArtistTop.jsx";
 import {Stats} from "./components/Stats.jsx";
+import {Tracks} from "./components/TrackTop.jsx";
 
 export const App = () => {
     return (
@@ -13,6 +14,7 @@ export const App = () => {
                 <Route path="/logined" element={<SuccessfullyLogin />} />
                 <Route path="/stats/artists" element={<ArtistTop />} />
                 <Route path="/stats" element={<Stats/>} />
+                <Route path="/stats/tracks" element={<Tracks/>} />
             </Routes>
         </Router>
     );

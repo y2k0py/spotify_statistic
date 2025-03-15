@@ -145,7 +145,7 @@ export const Stats = () => {
                     transition={{duration: 1, delay: 0.3}}
                 >
                     {TopButton(topArtists, false, () => navigate('/stats/artists'))}
-                    {TopButton(topTracks, true)}
+                    {TopButton(topTracks, true, ()=> navigate('/stats/tracks'))}
                 </motion.div>
 
                 <motion.div

@@ -4,7 +4,7 @@ import {HfInference} from "@huggingface/inference";
 import { motion } from "framer-motion";
 import {useNavigate} from "react-router-dom";
 import { TbMusic } from "react-icons/tb";
-import { IoStatsChart } from "react-icons/io5";
+import seeya from "../assets/seeya.png";
 
 export const Stats = () => {
     const [topArtists, setTopArtists] = useState([]);
@@ -124,20 +124,13 @@ export const Stats = () => {
     return (
         <div
             className='flex flex-col items-center min-h-screen bg-black p-5 w-full h-full overflow-hidden'>
-            <motion.h1
-                className='text-5xl bg-gradient-to-r from-green-300 via-green-500 to-green-800 bg-clip-text text-transparent animate-gradient font-bold text-center mt-2 absolute top-2 left-1/2 transform -translate-x-1/2'
-                initial={{opacity: 0, filter: "blur(5px)"}}
-                animate={{opacity: 1, filter: "blur(0px)"}}
-                transition={{duration: 1, delay: 0.3}}
-            >
-                <div className='flex items-center justify-center'>
-                    <IoStatsChart className='text-green-500 h-9'/>
-                    Stats
-                </div>
+            <motion.header className="fixed top-0 left-25 mt-3 mb-4 right-0 flex items-center flex content-center px-4"
+                           initial={{opacity: 0, filter: "blur(5px)"}}
+                           animate={{opacity: 1, filter: "blur(0px)"}}
+                           transition={{duration: 1, delay: 0.3}}><img
+                src={seeya} alt="seeya" className='h-20'/></motion.header>
 
-            </motion.h1>
-
-            <div className="flex flex-col items-center justify-center text-center mt-15 ">
+            <div className="flex flex-col items-center justify-center text-center mt-18 ">
                 <motion.div
                     className="items-center"
                     initial={{opacity: 0, filter: "blur(10px)"}}
@@ -145,7 +138,7 @@ export const Stats = () => {
                     transition={{duration: 1, delay: 0.3}}
                 >
                     {TopButton(topArtists, false, () => navigate('/stats/artists'))}
-                    {TopButton(topTracks, true, ()=> navigate('/stats/tracks'))}
+                    {TopButton(topTracks, true, () => navigate('/stats/tracks'))}
                 </motion.div>
 
                 <motion.div
@@ -175,15 +168,15 @@ export const Stats = () => {
                                 initial={{opacity: 0, filter: "blur(10px)"}}
                                 animate={{opacity: 1, filter: "blur(0px)"}}
                                 transition={{
-                                        duration: 0.8,
-                                        delay: 0.8 + index * 0.05
-                                    }}
-                                    className='text-white font-bold inline-block mr-1'
-                                >
-                                    {word}
-                                </motion.span>
-                            ))}
-                        </p>
+                                    duration: 0.8,
+                                    delay: 0.8 + index * 0.05
+                                }}
+                                className='text-white font-bold inline-block mr-1'
+                            >
+                                {word}
+                            </motion.span>
+                        ))}
+                    </p>
                 </motion.div>
                 <motion.span
                     className='text-gray-700 font-bold'
